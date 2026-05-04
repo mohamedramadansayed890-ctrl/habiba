@@ -3,98 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إلى حبيبة</title>
+    <title>إلى حبيبة القلب</title>
     <style>
-        :root { --primary-pink: #ff4d6d; --soft-pink: #ffb3c1; --dark-red: #c9184a; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #fff0f3 0%, #ffb3c1 100%); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; text-align: center; }
-        .container { background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 500px; width: 90%; z-index: 10; }
-        h1 { color: var(--dark-red); }
-        .btns { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        button { padding: 12px 25px; border: none; border-radius: 25px; cursor: pointer; font-size: 1.1rem; transition: transform 0.2s; font-weight: bold; }
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-pink: #ffb3c1;
+            --dark-red: #c9184a;
+            --gold: #ffb703;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffb3c1 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 50px rgba(255, 77, 109, 0.2);
+            max-width: 550px;
+            width: 90%;
+            z-index: 10;
+            border: 2px solid white;
+            position: relative;
+        }
+
+        h1 { color: var(--dark-red); margin-bottom: 10px; font-size: 1.8rem; }
+        p { color: #555; line-height: 1.6; }
+
+        .btns { display: flex; gap: 20px; justify-content: center; margin-top: 25px; }
+        
+        button {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
         .love-btn { background: var(--primary-pink); color: white; }
-        .brother-btn { background: #666; color: white; }
-        #game-area, #final-msg { display: none; margin-top: 20px; }
-        .puzzle-container { display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; padding: 20px; border: 2px dashed var(--primary-pink); border-radius: 15px; }
-        .name-box { padding: 10px 20px; background: white; border: 2px solid var(--primary-pink); border-radius: 10px; cursor: pointer; }
-        #final-msg { color: var(--dark-red); font-size: 1.2rem; line-height: 1.6; animation: fadeIn 1s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .heart { position: absolute; color: var(--primary-pink); font-size: 20px; animation: float 5s linear infinite; z-index: 1; }
+        .love-btn:hover { background: var(--dark-red); transform: scale(1.05); }
+        .brother-btn { background: #e0e0e0; color: #666; }
+        .brother-btn:hover { background: #333; color: white; }
+
+        /* Game Section */
+        #game-area { display: none; margin-top: 30px; }
+        
+        .puzzle-wrapper {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fff5f7;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px dashed var(--soft-pink);
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .character {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .draggable {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-pink);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            z-index: 20;
+            touch-action: none; /* مهم للموبايل */
+        }
+
+        .target {
+            width: 90px;
+            height: 90px;
+            border: 3px dashed #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .target.hovered { background: #ffe5ec; border-color: var(--primary-pink); transform: scale(1.1); }
+
+        .arrow { font-size: 2rem; color: var(--soft-pink); animation: slide 1.5s infinite; }
+        @keyframes slide { 0% { transform: translateX(0); } 50% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+
+        /* Messages */
+        #final-msg { display: none; }
+        .love-letter {
+            background: white;
+            padding: 20px;
+            border-left: 5px solid var(--primary-pink);
+            font-style: italic;
+            color: #444;
+            margin-top: 15px;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Decorative Hearts */
+        .heart { position: absolute; color: var(--primary-pink); pointer-events: none; animation: float 5s linear infinite; z-index: 1; }
         @keyframes float { 0% { transform: translateY(100vh); opacity: 1; } 100% { transform: translateY(-10vh); opacity: 0; } }
     </style>
 </head>
 <body>
 
-<!-- الكود المعدل لضمان تشغيل الأغنية -->
-<audio id="love-song" loop preload="auto">
+<audio id="love-song" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <div class="container" id="main-card">
     <div id="start-screen">
-        <h1>يا أرق حبيبة في الدنيا.. ❤️</h1>
-        <p>عندي ليكي سؤال ومحتاج ردك بصراحة:</p>
+        <h1>أهلاً يا حبيبة قلبي.. ❤️</h1>
+        <p>النهاردة مش يوم عادي، النهاردة حبيت أعبرلك عن اللي في قلبي بطريقة مختلفة.. بس قوليلي الأول:</p>
         <div class="btns">
-            <button class="love-btn" onclick="startLove()">بحبك ❤️</button>
-            <button class="brother-btn" onclick="anger()">إحنا إخوات ✋</button>
+            <button class="love-btn" onclick="startExperience()">بحبك ❤️</button>
+            <button class="brother-btn" onclick="triggerAnger()">إحنا إخوات ✋</button>
         </div>
     </div>
 
     <div id="game-area">
-        <h3>دوسي على "بيبة" عشان تروحي لـ "محمد"</h3>
-        <div class="puzzle-container">
-            <div style="padding: 10px 20px; border: 2px solid #ccc; border-radius: 10px;">محمد 🕺</div>
-            <div style="font-size: 2rem;">⬅️</div>
-            <div class="name-box" onclick="finishGame()">بيبة 💃</div>
+        <h1>لعبة الوصل ❤️</h1>
+        <p>اسحبي "بيبة" وديها عند "محمد" عشان الرسالة تظهر</p>
+        <div class="puzzle-wrapper">
+            <div class="character">
+                <div class="target" id="target-mohamed">محمد 🕺</div>
+            </div>
+            
+            <div class="arrow">⬅️</div>
+
+            <div class="character">
+                <div class="draggable" id="drag-beba" draggable="true">بيبة 💃</div>
+            </div>
         </div>
     </div>
 
     <div id="final-msg">
-        <h2>بحبك جداً جداً يا حبيبة ❤️</h2>
-        <p>انتي مش بس حبيبتي، انتي دنيتي كلها.. وحشاني فوق ما تتخيلي، وكل لحظة بتعدي وانتي مش معايا بحس إن في حاجة كبيرة ناقصاني. عرفي إنك أغلى حاجة في حياتي. ❤️</p>
+        <h1 style="color: var(--dark-red);">بحبك جداً يا حبيبة.. ❤️</h1>
+        <div class="love-letter">
+            "انتي مش بس حبيبتي، انتي دنيتي كلها.. وحشاني فوق ما تتخيلي، وكل لحظة بتعدي وانتي مش معايا بحس إن في حاجة كبيرة ناقصاني. وجودك هو اللي بيدي لحياتي طعم.. أنا بحبك جداً جداً جداً يا أغلى ما عندي."
+        </div>
+        <p style="margin-top:15px; font-weight:bold;">- من قلب محمد ❤️</p>
     </div>
 </div>
 
 <script>
     const song = document.getElementById('love-song');
+    const dragItem = document.getElementById('drag-beba');
+    const dropZone = document.getElementById('target-mohamed');
 
-    // وظيفة لإنشاء القلوب
+    // إنشاء قلوب متطايرة باستمرار
     setInterval(() => {
         const heart = document.createElement('div');
         heart.classList.add('heart');
-        heart.innerHTML = '❤️';
+        heart.innerHTML = ['❤️', '💖', '💗', '💕'][Math.floor(Math.random()*4)];
         heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
         heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
         document.body.appendChild(heart);
         setTimeout(() => heart.remove(), 5000);
     }, 300);
 
-    function startLove() {
-        // محاولة تشغيل الأغنية بأكثر من طريقة
-        song.play().then(() => {
-            console.log("الأغنية تعمل بنجاح");
-        }).catch(error => {
-            console.log("المتصفح منع التشغيل التلقائي، سأحاول مرة أخرى عند الضغط القادم");
-        });
-        
+    function startExperience() {
+        song.play().catch(() => console.log("Audio waiting for user"));
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('game-area').style.display = 'block';
     }
 
-    function finishGame() {
-        // تأكيد التشغيل مرة أخرى هنا
+    // منطق السحب والإفلات
+    dragItem.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text', 'beba');
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('hovered');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('hovered');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        finishExperience();
+    });
+
+    // للموبايل (دعم اللمس)
+    dragItem.addEventListener('touchstart', (e) => {
+        // تسهيل الموبايل: أول ما تلمس بيبة الرسالة تظهر أو تقدر تحركها
+    });
+
+    dragItem.addEventListener('click', finishExperience); // كخيار بديل سهل
+
+    function finishExperience() {
         song.play();
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('final-msg').style.display = 'block';
-        document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ffb3c1 100%)";
+        document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%)";
+        
+        // تأثير انفجار قلوب عند النجاح
+        for(let i=0; i<20; i++) {
+            setTimeout(createExplosionHeart, i * 50);
+        }
     }
 
-    function anger() {
+    function createExplosionHeart() {
+        const h = document.createElement('div');
+        h.innerHTML = '❤️';
+        h.style.position = 'fixed';
+        h.style.left = '50%';
+        h.style.top = '50%';
+        h.style.transition = 'all 1s ease-out';
+        document.body.appendChild(h);
+        
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 200 + 50;
+        
+        setTimeout(() => {
+            h.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(0)`;
+            h.style.opacity = '0';
+        }, 50);
+        setTimeout(() => h.remove(), 1000);
+    }
+
+    function triggerAnger() {
         alert("إخوات مين؟! انتي بتهزري؟!");
         alert("بقى كل الحب ده وفي الآخر تقولي إخوات؟!");
         alert("ماشي يا حبيبة.. بكرة تندمي على الكلمة دي! 😡");
         document.body.style.background = "black";
-        document.getElementById('main-card').innerHTML = "<h1 style='color:red'>غلطة عمرك! 😡🔥</h1><p style='color:red'>بتقولي لمحمد إحنا إخوات؟ روحي شوفي مين هيحبك قده بقا!</p>";
+        document.getElementById('main-card').innerHTML = `
+            <h1 style="color:red">غلطة عمرك! 😡🔥</h1>
+            <p style="color:red; font-weight:bold;">بتقولي لمحمد إحنا إخوات؟ <br> روحي شوفي مين هيحبك قده بقا!</p>
+            <button onclick="location.reload()" style="background:#333; color:white; margin-top:20px;">اعتذري وجربي تاني 🙄</button>
+        `;
     }
 </script>
+
 </body>
 </html>
