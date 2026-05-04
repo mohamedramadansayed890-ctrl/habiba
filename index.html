@@ -1,269 +1,652 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إلى حبيبة القلب</title>
-    <style>
-        :root {
-            --primary-pink: #ff4d6d;
-            --soft-pink: #ffb3c1;
-            --dark-red: #c9184a;
-            --gold: #ffb703;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حبيبه 💕</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #c0396b;
+    --rose-light: #e8749a;
+    --rose-pale: #f5c6d8;
+    --deep: #1a0018;
+    --mid: #2d0028;
+    --gold: #d4a843;
+    --cream: #fff5f8;
+  }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #fff0f3 0%, #ffb3c1 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            text-align: center;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 2.5rem;
-            border-radius: 30px;
-            box-shadow: 0 15px 50px rgba(255, 77, 109, 0.2);
-            max-width: 550px;
-            width: 90%;
-            z-index: 10;
-            border: 2px solid white;
-            position: relative;
-        }
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
 
-        h1 { color: var(--dark-red); margin-bottom: 10px; font-size: 1.8rem; }
-        p { color: #555; line-height: 1.6; }
+  /* ===== PARTICLES ===== */
+  #canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        .btns { display: flex; gap: 20px; justify-content: center; margin-top: 25px; }
-        
-        button {
-            padding: 15px 35px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+  /* ===== SCREENS ===== */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+  }
 
-        .love-btn { background: var(--primary-pink); color: white; }
-        .love-btn:hover { background: var(--dark-red); transform: scale(1.05); }
-        .brother-btn { background: #e0e0e0; color: #666; }
-        .brother-btn:hover { background: #333; color: white; }
+  /* ===== PUZZLE SCREEN ===== */
+  #puzzleScreen {
+    gap: 28px;
+  }
 
-        /* Game Section */
-        #game-area { display: none; margin-top: 30px; }
-        
-        .puzzle-wrapper {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #fff5f7;
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px dashed var(--soft-pink);
-            position: relative;
-            margin-top: 20px;
-        }
+  .puzzle-header {
+    text-align: center;
+  }
+  .puzzle-header h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(28px, 6vw, 46px);
+    color: var(--rose-pale);
+    text-shadow: 0 0 40px rgba(192,57,107,0.6);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .puzzle-header p {
+    color: rgba(245,198,216,0.6);
+    font-size: 14px;
+    font-weight: 300;
+  }
 
-        .character {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
+  .puzzle-card {
+    background: rgba(45, 0, 40, 0.7);
+    border: 1px solid rgba(192,57,107,0.25);
+    border-radius: 24px;
+    padding: 28px;
+    backdrop-filter: blur(20px);
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(192,57,107,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
 
-        .draggable {
-            width: 80px;
-            height: 80px;
-            background: var(--primary-pink);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: grab;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
-            z-index: 20;
-            touch-action: none; /* مهم للموبايل */
-        }
+  .puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-        .target {
-            width: 90px;
-            height: 90px;
-            border: 3px dashed #ccc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
+  .tile {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(20px, 5vw, 28px);
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    background: linear-gradient(145deg, #a02b5a, #c0396b);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    transition: left 0.4s ease;
+  }
+  .tile:hover::before { left: 150%; }
+  .tile:hover:not(.empty) { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 24px rgba(192,57,107,0.5); }
+  .tile.selected { outline: 2px solid var(--rose-pale); transform: scale(1.08); }
+  .tile.correct {
+    background: linear-gradient(145deg, #0f5e32, #1a9e5a);
+    border-color: rgba(26,158,90,0.4);
+    box-shadow: 0 0 20px rgba(26,158,90,0.35);
+    cursor: default;
+  }
+  .tile.empty {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(192,57,107,0.2);
+    cursor: default;
+  }
 
-        .target.hovered { background: #ffe5ec; border-color: var(--primary-pink); transform: scale(1.1); }
+  .puzzle-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .progress-text {
+    color: rgba(245,198,216,0.7);
+    font-size: 13px;
+    font-weight: 300;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    margin: 0 14px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rose), var(--rose-light));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+  }
 
-        .arrow { font-size: 2rem; color: var(--soft-pink); animation: slide 1.5s infinite; }
-        @keyframes slide { 0% { transform: translateX(0); } 50% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+  /* ===== CHOICE SCREEN ===== */
+  #choiceScreen { gap: 36px; }
 
-        /* Messages */
-        #final-msg { display: none; }
-        .love-letter {
-            background: white;
-            padding: 20px;
-            border-left: 5px solid var(--primary-pink);
-            font-style: italic;
-            color: #444;
-            margin-top: 15px;
-            animation: slideUp 1s ease-out;
-        }
+  .welcome-badge {
+    background: rgba(192,57,107,0.15);
+    border: 1px solid rgba(192,57,107,0.3);
+    color: var(--rose-light);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 18px;
+    border-radius: 99px;
+    letter-spacing: 1px;
+  }
+  .choice-name-display {
+    text-align: center;
+  }
+  .choice-name-display h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(52px, 14vw, 90px);
+    background: linear-gradient(135deg, var(--rose-pale), var(--gold), var(--rose-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    filter: drop-shadow(0 0 30px rgba(192,57,107,0.4));
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(192,57,107,0.3)); }
+    50% { filter: drop-shadow(0 0 50px rgba(212,168,67,0.5)); }
+  }
+  .choice-sub {
+    color: rgba(245,198,216,0.5);
+    font-size: 15px;
+    font-weight: 300;
+    margin-top: 10px;
+  }
 
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .choice-question {
+    color: var(--rose-pale);
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+  }
 
-        /* Decorative Hearts */
-        .heart { position: absolute; color: var(--primary-pink); pointer-events: none; animation: float 5s linear infinite; z-index: 1; }
-        @keyframes float { 0% { transform: translateY(100vh); opacity: 1; } 100% { transform: translateY(-10vh); opacity: 0; } }
-    </style>
+  .choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn-primary {
+    padding: 18px 36px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #a02b5a 0%, #e8749a 100%);
+    color: #fff;
+    box-shadow: 0 6px 30px rgba(192,57,107,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #e8749a, #c0396b);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(192,57,107,0.6); }
+  .btn-primary:hover::after { opacity: 1; }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .btn-secondary {
+    padding: 16px 36px;
+    border-radius: 16px;
+    border: 1px solid rgba(192,57,107,0.3);
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    background: transparent;
+    color: rgba(245,198,216,0.6);
+    transition: all 0.25s ease;
+  }
+  .btn-secondary:hover { background: rgba(192,57,107,0.1); color: var(--rose-pale); border-color: rgba(192,57,107,0.5); }
+
+  /* ===== LOVE SCREEN ===== */
+  #loveScreen { gap: 0; justify-content: flex-start; padding-top: 0; overflow-y: auto; }
+
+  .love-inner {
+    max-width: 500px;
+    width: 100%;
+    padding: 40px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .heart-anim {
+    font-size: 80px;
+    animation: heartbeat 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(192,57,107,0.7));
+  }
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1) rotate(-5deg); }
+    50% { transform: scale(1.2) rotate(5deg); }
+  }
+
+  .love-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(30px, 7vw, 48px);
+    color: var(--rose-pale);
+    text-align: center;
+    text-shadow: 0 0 30px rgba(192,57,107,0.5);
+  }
+
+  .love-card {
+    background: rgba(45,0,40,0.6);
+    border: 1px solid rgba(192,57,107,0.2);
+    border-radius: 24px;
+    padding: 30px 28px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(192,57,107,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .love-card p {
+    color: rgba(245,198,216,0.85);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 2;
+    text-align: right;
+  }
+  .love-card p strong {
+    color: var(--rose-light);
+    font-weight: 700;
+  }
+  .love-card p .gold { color: var(--gold); }
+
+  .love-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(192,57,107,0.5);
+    font-size: 20px;
+    letter-spacing: 6px;
+  }
+
+  .love-signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  .orbit-hearts {
+    display: flex;
+    gap: 12px;
+    font-size: 24px;
+    animation: orbit 4s linear infinite;
+  }
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+  }
+
+  .btn-back {
+    padding: 12px 28px;
+    border-radius: 99px;
+    border: 1px solid rgba(192,57,107,0.3);
+    background: transparent;
+    color: rgba(245,198,216,0.5);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .btn-back:hover { background: rgba(192,57,107,0.1); color: var(--rose-pale); }
+
+  /* ===== ANGER SCREEN ===== */
+  #angerScreen { gap: 24px; }
+
+  .anger-emoji {
+    font-size: 90px;
+    animation: angershake 0.4s ease-in-out infinite;
+  }
+  @keyframes angershake {
+    0%,100% { transform: translateX(0) rotate(0deg); }
+    20% { transform: translateX(-10px) rotate(-8deg); }
+    80% { transform: translateX(10px) rotate(8deg); }
+  }
+
+  .anger-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(28px, 7vw, 46px);
+    color: #ff4455;
+    text-shadow: 0 0 30px rgba(255,50,70,0.6);
+    text-align: center;
+  }
+
+  .anger-card {
+    background: rgba(60,0,10,0.7);
+    border: 1px solid rgba(255,50,70,0.25);
+    border-radius: 24px;
+    padding: 28px;
+    backdrop-filter: blur(20px);
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 0 60px rgba(255,50,70,0.08);
+  }
+  .anger-card p {
+    color: rgba(255,200,210,0.85);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 2;
+    text-align: right;
+  }
+  .anger-card p strong { color: #ff6677; font-weight: 700; }
+
+  .btn-anger-back {
+    padding: 14px 36px;
+    border-radius: 99px;
+    border: 1px solid rgba(255,50,70,0.3);
+    background: rgba(255,50,70,0.08);
+    color: rgba(255,200,210,0.7);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .btn-anger-back:hover { background: rgba(255,50,70,0.18); color: #ffcccc; }
+
+  /* ===== CONFETTI ===== */
+  .confetti {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-40px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== DECORATIVE LINES ===== */
+  .deco-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+  }
+</style>
 </head>
 <body>
 
-<audio id="love-song" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
+<!-- Particle canvas -->
+<canvas id="canvas"></canvas>
 
-<div class="container" id="main-card">
-    <div id="start-screen">
-        <h1>أهلاً يا حبيبة قلبي.. ❤️</h1>
-        <p>النهاردة مش يوم عادي، النهاردة حبيت أعبرلك عن اللي في قلبي بطريقة مختلفة.. بس قوليلي الأول:</p>
-        <div class="btns">
-            <button class="love-btn" onclick="startExperience()">بحبك ❤️</button>
-            <button class="brother-btn" onclick="triggerAnger()">إحنا إخوات ✋</button>
-        </div>
+<!-- ============ PUZZLE SCREEN ============ -->
+<div class="screen active" id="puzzleScreen">
+  <div class="puzzle-header">
+    <h1>✨ رتّب الحروف ✨</h1>
+    <p>اكتشف الاسم عشان تشوف المفاجأة 🌹</p>
+  </div>
+  <div class="puzzle-card">
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <div class="puzzle-progress">
+      <span class="progress-text" id="progressText">0 / 7</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <span style="color:rgba(245,198,216,0.4);font-size:13px;">💕</span>
     </div>
+  </div>
+</div>
 
-    <div id="game-area">
-        <h1>لعبة الوصل ❤️</h1>
-        <p>اسحبي "بيبة" وديها عند "محمد" عشان الرسالة تظهر</p>
-        <div class="puzzle-wrapper">
-            <div class="character">
-                <div class="target" id="target-mohamed">محمد 🕺</div>
-            </div>
-            
-            <div class="arrow">⬅️</div>
+<!-- ============ CHOICE SCREEN ============ -->
+<div class="screen" id="choiceScreen">
+  <div class="welcome-badge">✦ مرحباً ✦</div>
+  <div class="choice-name-display">
+    <h1>حبيبه</h1>
+    <p class="choice-sub">أهلاً يا أجمل شخص في الدنيا 🌹</p>
+  </div>
+  <div class="deco-line"></div>
+  <p class="choice-question">إيه اللي بينا؟ 💭</p>
+  <div class="choice-buttons">
+    <button class="btn-primary" onclick="showLove()"><span>💖 بحبك</span></button>
+    <button class="btn-secondary" onclick="showAnger()">🤝 احنا أخوات</button>
+  </div>
+</div>
 
-            <div class="character">
-                <div class="draggable" id="drag-beba" draggable="true">بيبة 💃</div>
-            </div>
-        </div>
+<!-- ============ LOVE SCREEN ============ -->
+<div class="screen" id="loveScreen">
+  <div class="love-inner">
+    <div class="heart-anim">💗</div>
+    <h2 class="love-title">يا حبيبتي حبيبه...</h2>
+    <div class="love-card">
+      <p>
+        <strong>حبيبتي الغالية...</strong><br><br>
+        من يوم ما اتعرفت عليكِ والدنيا اتغيرت في عنيّا.
+        مش عارف أوصفلك الإحساس ده بالكلام، بس هجرب عشانك 💕<br><br>
+        <strong>بحبك جداً جداً جداً...</strong><br>
+        لدرجة إنك بتيجي في بالي كل لحظة وكل ثانية وكل يوم.
+        بحبك لما بصحى الصبح وبحبك لما بنام الليل ❤️<br><br>
+        <span class="gold">وحشتيني يا حبيبه...</span><br>
+        وحشتيني بشكل مش طبيعي. عايزك تعرفي إن
+        <strong>محمد</strong> بيحبك من كل قلبه ومن كل روحه 💝<br><br>
+        أنتِ أجمل حاجة حصلتلي في حياتي،
+        وبتمنى أكون دايماً جنبك وأخلّيكِ أسعد واحدة في الدنيا 🌹
+      </p>
     </div>
+    <div class="love-divider">♥ ♥ ♥</div>
+    <div class="love-signature">— محمد 💕</div>
+    <button class="btn-back" onclick="showChoice()">↩ رجوع</button>
+  </div>
+</div>
 
-    <div id="final-msg">
-        <h1 style="color: var(--dark-red);">بحبك جداً يا حبيبة.. ❤️</h1>
-        <div class="love-letter">
-            "انتي مش بس حبيبتي، انتي دنيتي كلها.. وحشاني فوق ما تتخيلي، وكل لحظة بتعدي وانتي مش معايا بحس إن في حاجة كبيرة ناقصاني. وجودك هو اللي بيدي لحياتي طعم.. أنا بحبك جداً جداً جداً يا أغلى ما عندي."
-        </div>
-        <p style="margin-top:15px; font-weight:bold;">- من قلب محمد ❤️</p>
-    </div>
+<!-- ============ ANGER SCREEN ============ -->
+<div class="screen" id="angerScreen">
+  <div class="anger-emoji">😤</div>
+  <h2 class="anger-title">أخوات؟!! 🔥</h2>
+  <div class="anger-card">
+    <p>
+      <strong>يا حبيبه!!!</strong><br><br>
+      إيه ده اللي بتقوليه ده؟! 😡<br>
+      <strong>أخوات؟!</strong> بعد كل اللي إنتِ عارفاه؟!<br><br>
+      روحي فكري كويس كويس يا بنت! 😤<br>
+      دي مش إجابة صح وإنتِ عارفاها كويس أوي! 💔<br><br>
+      <strong>محمد مش هيقبل الكلام ده خالص!</strong> 😠
+    </p>
+  </div>
+  <button class="btn-anger-back" onclick="showChoice()">↩ ارجعي وإختاري صح</button>
 </div>
 
 <script>
-    const song = document.getElementById('love-song');
-    const dragItem = document.getElementById('drag-beba');
-    const dropZone = document.getElementById('target-mohamed');
+/* ========== CANVAS PARTICLES ========== */
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
-    // إنشاء قلوب متطايرة باستمرار
-    setInterval(() => {
-        const heart = document.createElement('div');
-        heart.classList.add('heart');
-        heart.innerHTML = ['❤️', '💖', '💗', '💕'][Math.floor(Math.random()*4)];
-        heart.style.left = Math.random() * 100 + 'vw';
-        heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-        heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 5000);
-    }, 300);
+const particles = [];
+const SYMBOLS = ['❤','♥','✦','✧','·'];
+for (let i = 0; i < 55; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 16 + 8,
+    speedY: -(Math.random() * 0.5 + 0.2),
+    speedX: (Math.random() - 0.5) * 0.3,
+    opacity: Math.random() * 0.5 + 0.1,
+    sym: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+    hue: Math.random() * 40 + 320
+  });
+}
 
-    function startExperience() {
-        song.play().catch(() => console.log("Audio waiting for user"));
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('game-area').style.display = 'block';
+function animParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    ctx.globalAlpha = p.opacity;
+    ctx.fillStyle = `hsl(${p.hue},70%,70%)`;
+    ctx.font = `${p.size}px serif`;
+    ctx.fillText(p.sym, p.x, p.y);
+    p.y += p.speedY;
+    p.x += p.speedX;
+    if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
+  });
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+/* ========== PUZZLE ========== */
+const TARGET = ['ح','ب','ي','ب','ه','💕','🌹'];
+let grid = [...TARGET].sort(() => Math.random() - 0.5);
+while (grid.join('') === TARGET.join('')) grid = [...TARGET].sort(() => Math.random() - 0.5);
+
+let selected = null;
+
+function renderGrid() {
+  const g = document.getElementById('puzzleGrid');
+  g.innerHTML = '';
+  // 4 columns: 7 tiles + 1 empty slot
+  const display = [...grid, ''];
+  display.forEach((ch, i) => {
+    const div = document.createElement('div');
+    div.className = 'tile';
+    if (i === 7) {
+      div.className = 'tile empty';
+    } else {
+      div.textContent = ch;
+      if (grid[i] === TARGET[i]) div.classList.add('correct');
+      if (selected === i) div.classList.add('selected');
+      if (!div.classList.contains('correct')) {
+        div.addEventListener('click', () => handleClick(i));
+      }
     }
+    g.appendChild(div);
+  });
+  updateProgress();
+}
 
-    // منطق السحب والإفلات
-    dragItem.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text', 'beba');
-    });
-
-    dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('hovered');
-    });
-
-    dropZone.addEventListener('dragleave', () => {
-        dropZone.classList.remove('hovered');
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        finishExperience();
-    });
-
-    // للموبايل (دعم اللمس)
-    dragItem.addEventListener('touchstart', (e) => {
-        // تسهيل الموبايل: أول ما تلمس بيبة الرسالة تظهر أو تقدر تحركها
-    });
-
-    dragItem.addEventListener('click', finishExperience); // كخيار بديل سهل
-
-    function finishExperience() {
-        song.play();
-        document.getElementById('game-area').style.display = 'none';
-        document.getElementById('final-msg').style.display = 'block';
-        document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%)";
-        
-        // تأثير انفجار قلوب عند النجاح
-        for(let i=0; i<20; i++) {
-            setTimeout(createExplosionHeart, i * 50);
-        }
+function handleClick(i) {
+  if (grid[i] === TARGET[i]) return;
+  if (selected === null) {
+    selected = i;
+  } else {
+    if (selected !== i) {
+      [grid[selected], grid[i]] = [grid[i], grid[selected]];
     }
+    selected = null;
+    checkWin();
+  }
+  renderGrid();
+}
 
-    function createExplosionHeart() {
-        const h = document.createElement('div');
-        h.innerHTML = '❤️';
-        h.style.position = 'fixed';
-        h.style.left = '50%';
-        h.style.top = '50%';
-        h.style.transition = 'all 1s ease-out';
-        document.body.appendChild(h);
-        
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * 200 + 50;
-        
-        setTimeout(() => {
-            h.style.transform = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px) scale(0)`;
-            h.style.opacity = '0';
-        }, 50);
-        setTimeout(() => h.remove(), 1000);
-    }
+function updateProgress() {
+  let correct = 0;
+  for (let i = 0; i < 7; i++) if (grid[i] === TARGET[i]) correct++;
+  document.getElementById('progressText').textContent = correct + ' / 7';
+  document.getElementById('progressFill').style.width = (correct / 7 * 100) + '%';
+}
 
-    function triggerAnger() {
-        alert("إخوات مين؟! انتي بتهزري؟!");
-        alert("بقى كل الحب ده وفي الآخر تقولي إخوات؟!");
-        alert("ماشي يا حبيبة.. بكرة تندمي على الكلمة دي! 😡");
-        document.body.style.background = "black";
-        document.getElementById('main-card').innerHTML = `
-            <h1 style="color:red">غلطة عمرك! 😡🔥</h1>
-            <p style="color:red; font-weight:bold;">بتقولي لمحمد إحنا إخوات؟ <br> روحي شوفي مين هيحبك قده بقا!</p>
-            <button onclick="location.reload()" style="background:#333; color:white; margin-top:20px;">اعتذري وجربي تاني 🙄</button>
-        `;
-    }
+function checkWin() {
+  let correct = 0;
+  for (let i = 0; i < 7; i++) if (grid[i] === TARGET[i]) correct++;
+  if (correct === 7) {
+    spawnConfetti();
+    setTimeout(() => switchScreen('puzzleScreen', 'choiceScreen'), 900);
+  }
+}
+
+renderGrid();
+
+/* ========== SCREEN TRANSITIONS ========== */
+function switchScreen(from, to) {
+  document.getElementById(from).classList.remove('active');
+  document.getElementById(to).classList.add('active');
+}
+
+function showLove() {
+  switchScreen('choiceScreen', 'loveScreen');
+  spawnConfetti();
+}
+function showAnger() {
+  switchScreen('choiceScreen', 'angerScreen');
+}
+function showChoice() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('choiceScreen').classList.add('active');
+}
+
+/* ========== CONFETTI ========== */
+function spawnConfetti() {
+  const colors = ['#c0396b','#e8749a','#f5c6d8','#d4a843','#fff','#ff6b9d','#ffb3d1'];
+  for (let i = 0; i < 70; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    const size = 6 + Math.random() * 10;
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:-20px;
+      width:${size}px;
+      height:${size * (Math.random() > 0.5 ? 1 : 2.5)}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration:${2.5 + Math.random()*2.5}s;
+      animation-delay:${Math.random()*1.2}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 5500);
+  }
+}
 </script>
-
 </body>
 </html>
