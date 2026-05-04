@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إلى حبيبة</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-pink: #ffb3c1;
+            --dark-red: #c9184a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffb3c1 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            z-index: 10;
+        }
+
+        h1 { color: var(--dark-red); }
+
+        .btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .love-btn { background: var(--primary-pink); color: white; }
+        .brother-btn { background: #666; color: white; }
+
+        button:hover { transform: scale(1.1); }
+
+        /* Game Style */
+        #game-area { display: none; margin-top: 20px; }
+        .puzzle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 2px dashed var(--primary-pink);
+            border-radius: 15px;
+        }
+
+        .name-box {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--primary-pink);
+            border-radius: 10px;
+            cursor: grab;
+        }
+
+        .drop-zone {
+            width: 100px;
+            height: 50px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #final-msg {
+            display: none;
+            color: var(--dark-red);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Floating Hearts */
+        .heart {
+            position: absolute;
+            color: var(--primary-pink);
+            font-size: 20px;
+            animation: float 5s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-card">
+    <div id="start-screen">
+        <h1>يا أرق حبيبة في الدنيا..</h1>
+        <p>عندي ليكي سؤال ومحتاج ردك بصراحة:</p>
+        <div class="btns">
+            <button class="love-btn" onclick="startLove()">بحبك ❤️</button>
+            <button class="brother-btn" onclick="anger()">إحنا إخوات ✋</button>
+        </div>
+    </div>
+
+    <div id="game-area">
+        <h3>وصلي القلوب ببعضها عشان تشوفي الرسالة..</h3>
+        <div class="puzzle-container">
+            <div class="name-box" draggable="true" id="drag-beba">بيبة</div>
+            <div style="font-size: 2rem;">➡️</div>
+            <div class="drop-zone" id="drop-mohamed">محمد</div>
+        </div>
+    </div>
+
+    <div id="final-msg">
+        <h2>بحبك جداً جداً يا حبيبة ❤️</h2>
+        <p>انتي مش بس حبيبتي، انتي دنيتي كلها.. وحشاني فوق ما تتخيلي، وكل لحظة بتعدي وانتي مش معايا بحس إن في حاجة كبيرة ناقصاني. وجودك هو اللي بيدي لحياتي طعم. ❤️</p>
+    </div>
+</div>
+
+<script>
+    // إنشاء قلوب متطايرة
+    function createHearts() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '❤️';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 5000);
+    }
+    setInterval(createHearts, 300);
+
+    function startLove() {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('game-area').style.display = 'block';
+    }
+
+    function anger() {
+        alert("إخوات مين؟! انتي بتهزري؟!");
+        alert("بقى كل الحب ده وفي الآخر تقولي إخوات؟!");
+        alert("ماشي يا حبيبة.. بكرة تندمي على الكلمة دي! 😡");
+        document.body.style.background = "black";
+        document.getElementById('main-card').innerHTML = "<h1 style='color:red'>غلطة عمرك! 😡🔥</h1><p>روحي شوفي مين هيحبك قدي بقا!</p>";
+    }
+
+    // لعبة التوصيل البسيطة
+    const dragItem = document.getElementById('drag-beba');
+    const dropZone = document.getElementById('drop-mohamed');
+
+    dragItem.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text', e.target.id);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        document.getElementById('game-area').style.display = 'none';
+        document.getElementById('final-msg').style.display = 'block';
+        document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ffb3c1 100%)";
+    });
+
+    // للموبايل (تسهيل اللعبة بنقرة)
+    dragItem.addEventListener('click', () => {
+        document.getElementById('game-area').style.display = 'none';
+        document.getElementById('final-msg').style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
