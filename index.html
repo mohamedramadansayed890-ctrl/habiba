@@ -113,6 +113,11 @@
 </head>
 <body>
 
+<!-- ملف الأغنية بناءً على الصورة التي أرفقتها -->
+<audio id="love-song" loop>
+    <source src="music.mp3.mp3" type="audio/mpeg">
+</audio>
+
 <div class="container" id="main-card">
     <div id="start-screen">
         <h1>يا أرق حبيبة في الدنيا..</h1>
@@ -139,6 +144,8 @@
 </div>
 
 <script>
+    const song = document.getElementById('love-song');
+
     // إنشاء قلوب متطايرة
     function createHearts() {
         const heart = document.createElement('div');
@@ -152,6 +159,9 @@
     setInterval(createHearts, 300);
 
     function startLove() {
+        // تشغيل الأغنية عند الضغط على بحبك
+        song.play().catch(e => console.log("تحتاج الأغنية لتفاعل المستخدم أولاً"));
+        
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('game-area').style.display = 'block';
     }
@@ -161,7 +171,7 @@
         alert("بقى كل الحب ده وفي الآخر تقولي إخوات؟!");
         alert("ماشي يا حبيبة.. بكرة تندمي على الكلمة دي! 😡");
         document.body.style.background = "black";
-        document.getElementById('main-card').innerHTML = "<h1 style='color:red'>غلطة عمرك! 😡🔥</h1><p>روحي شوفي مين هيحبك قدي بقا!</p>";
+        document.getElementById('main-card').innerHTML = "<h1 style='color:red'>غلطة عمرك! 😡🔥</h1><p style='color:red'>روحي شوفي مين هيحبك قدي بقا!</p>";
     }
 
     // لعبة التوصيل البسيطة
@@ -183,7 +193,7 @@
         document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ffb3c1 100%)";
     });
 
-    // للموبايل (تسهيل اللعبة بنقرة)
+    // للموبايل ولتسهيل اللعبة
     dragItem.addEventListener('click', () => {
         document.getElementById('game-area').style.display = 'none';
         document.getElementById('final-msg').style.display = 'block';
