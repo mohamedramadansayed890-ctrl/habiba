@@ -13,116 +13,74 @@
     --deep: #1a0018;
     --mid: #2d0028;
     --gold: #d4a843;
-    --cream: #fff5f8;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     font-family: 'Tajawal', sans-serif;
     background: var(--deep);
     min-height: 100vh;
     overflow-x: hidden;
-    cursor: default;
   }
-
-  /* ===== PARTICLES ===== */
   #canvas {
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
-
-  /* ===== SCREENS ===== */
   .screen {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    padding: 24px;
-    opacity: 0;
-    pointer-events: none;
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 10; padding: 20px;
+    opacity: 0; pointer-events: none;
     transition: opacity 0.7s ease;
+    overflow-y: auto;
   }
-  .screen.active {
-    opacity: 1;
-    pointer-events: all;
-  }
+  .screen.active { opacity: 1; pointer-events: all; }
 
-  /* ===== PUZZLE SCREEN ===== */
-  #puzzleScreen {
-    gap: 28px;
-  }
-
-  .puzzle-header {
-    text-align: center;
-  }
+  /* ===== PUZZLE ===== */
+  #puzzleScreen { gap: 24px; }
+  .puzzle-header { text-align: center; }
   .puzzle-header h1 {
     font-family: 'Dancing Script', cursive;
-    font-size: clamp(28px, 6vw, 46px);
+    font-size: clamp(26px,6vw,44px);
     color: var(--rose-pale);
     text-shadow: 0 0 40px rgba(192,57,107,0.6);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
-  .puzzle-header p {
-    color: rgba(245,198,216,0.6);
-    font-size: 14px;
-    font-weight: 300;
-  }
-
+  .puzzle-header p { color: rgba(245,198,216,0.55); font-size: 14px; font-weight: 300; }
   .puzzle-card {
-    background: rgba(45, 0, 40, 0.7);
-    border: 1px solid rgba(192,57,107,0.25);
-    border-radius: 24px;
-    padding: 28px;
+    background: rgba(45,0,40,0.75);
+    border: 1px solid rgba(192,57,107,0.22);
+    border-radius: 24px; padding: 26px;
     backdrop-filter: blur(20px);
-    max-width: 380px;
-    width: 100%;
-    box-shadow: 0 0 60px rgba(192,57,107,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+    max-width: 380px; width: 100%;
+    box-shadow: 0 0 60px rgba(192,57,107,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
   }
-
+  /* puzzle: 3 cols for 6 letters + 1 empty = 7 cells -> use 4 cols with 1 extra empty */
   .puzzle-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-bottom: 20px;
   }
-
   .tile {
-    aspect-ratio: 1;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(20px, 5vw, 28px);
-    font-weight: 800;
-    color: #fff;
-    cursor: pointer;
-    user-select: none;
+    aspect-ratio: 1; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(22px,6vw,30px); font-weight: 800;
+    color: #fff; cursor: pointer; user-select: none;
     background: linear-gradient(145deg, #a02b5a, #c0396b);
     border: 1px solid rgba(255,255,255,0.12);
     box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.3s;
+    position: relative; overflow: hidden;
   }
   .tile::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-    transition: left 0.4s ease;
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13), transparent);
+    transition: left 0.4s;
   }
   .tile:hover::before { left: 150%; }
-  .tile:hover:not(.empty) { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 24px rgba(192,57,107,0.5); }
+  .tile:hover:not(.empty):not(.correct) { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 24px rgba(192,57,107,0.5); }
   .tile.selected { outline: 2px solid var(--rose-pale); transform: scale(1.08); }
   .tile.correct {
     background: linear-gradient(145deg, #0f5e32, #1a9e5a);
@@ -132,145 +90,87 @@
   }
   .tile.empty {
     background: rgba(255,255,255,0.03);
-    border: 1px dashed rgba(192,57,107,0.2);
+    border: 1px dashed rgba(192,57,107,0.18);
     cursor: default;
   }
-
-  .puzzle-progress {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .progress-text {
-    color: rgba(245,198,216,0.7);
-    font-size: 13px;
-    font-weight: 300;
-  }
+  .puzzle-progress { display: flex; align-items: center; justify-content: space-between; }
+  .progress-text { color: rgba(245,198,216,0.65); font-size: 13px; font-weight: 300; }
   .progress-bar-wrap {
-    flex: 1;
-    height: 4px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 99px;
-    margin: 0 14px;
-    overflow: hidden;
+    flex: 1; height: 4px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 99px; margin: 0 14px; overflow: hidden;
   }
   .progress-bar-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--rose), var(--rose-light));
-    border-radius: 99px;
-    transition: width 0.5s ease;
+    border-radius: 99px; transition: width 0.5s;
   }
 
   /* ===== CHOICE SCREEN ===== */
-  #choiceScreen { gap: 36px; }
-
+  #choiceScreen { gap: 30px; }
   .welcome-badge {
-    background: rgba(192,57,107,0.15);
+    background: rgba(192,57,107,0.14);
     border: 1px solid rgba(192,57,107,0.3);
-    color: var(--rose-light);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 6px 18px;
-    border-radius: 99px;
-    letter-spacing: 1px;
+    color: var(--rose-light); font-size: 13px;
+    font-weight: 500; padding: 6px 18px;
+    border-radius: 99px; letter-spacing: 1px;
   }
-  .choice-name-display {
-    text-align: center;
-  }
+  .choice-name-display { text-align: center; }
   .choice-name-display h1 {
     font-family: 'Dancing Script', cursive;
-    font-size: clamp(52px, 14vw, 90px);
+    font-size: clamp(50px,13vw,88px);
     background: linear-gradient(135deg, var(--rose-pale), var(--gold), var(--rose-light));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    filter: drop-shadow(0 0 30px rgba(192,57,107,0.4));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; line-height: 1;
+    filter: drop-shadow(0 0 28px rgba(192,57,107,0.4));
     animation: shimmer 3s ease-in-out infinite;
   }
   @keyframes shimmer {
     0%,100% { filter: drop-shadow(0 0 20px rgba(192,57,107,0.3)); }
     50% { filter: drop-shadow(0 0 50px rgba(212,168,67,0.5)); }
   }
-  .choice-sub {
-    color: rgba(245,198,216,0.5);
-    font-size: 15px;
-    font-weight: 300;
-    margin-top: 10px;
-  }
-
-  .choice-question {
-    color: var(--rose-pale);
-    font-size: 18px;
-    font-weight: 500;
-    text-align: center;
-  }
-
-  .choice-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: 100%;
-    max-width: 320px;
-  }
-
+  .choice-sub { color: rgba(245,198,216,0.45); font-size: 15px; font-weight: 300; margin-top: 10px; }
+  .deco-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--rose), transparent); }
+  .choice-question { color: var(--rose-pale); font-size: 18px; font-weight: 500; text-align: center; }
+  .choice-buttons { display: flex; flex-direction: column; gap: 13px; width: 100%; max-width: 320px; }
   .btn-primary {
-    padding: 18px 36px;
-    border-radius: 16px;
-    border: none;
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    background: linear-gradient(135deg, #a02b5a 0%, #e8749a 100%);
+    padding: 17px 36px; border-radius: 16px; border: none;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    font-size: 18px; font-weight: 700; letter-spacing: 1px;
+    background: linear-gradient(135deg, #a02b5a, #e8749a);
     color: #fff;
     box-shadow: 0 6px 30px rgba(192,57,107,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative;
-    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative; overflow: hidden;
   }
   .btn-primary::after {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: linear-gradient(135deg, #e8749a, #c0396b);
-    opacity: 0;
-    transition: opacity 0.3s;
+    opacity: 0; transition: opacity 0.3s;
   }
   .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(192,57,107,0.6); }
   .btn-primary:hover::after { opacity: 1; }
   .btn-primary span { position: relative; z-index: 1; }
-
   .btn-secondary {
-    padding: 16px 36px;
-    border-radius: 16px;
-    border: 1px solid rgba(192,57,107,0.3);
-    cursor: pointer;
-    font-family: 'Tajawal', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    background: transparent;
-    color: rgba(245,198,216,0.6);
-    transition: all 0.25s ease;
+    padding: 15px 36px; border-radius: 16px;
+    border: 1px solid rgba(192,57,107,0.28);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    font-size: 16px; font-weight: 400;
+    background: transparent; color: rgba(245,198,216,0.55);
+    transition: all 0.25s;
   }
   .btn-secondary:hover { background: rgba(192,57,107,0.1); color: var(--rose-pale); border-color: rgba(192,57,107,0.5); }
 
-  /* ===== LOVE SCREEN ===== */
-  #loveScreen { gap: 0; justify-content: flex-start; padding-top: 0; overflow-y: auto; }
-
+  /* ===== LOVE SCREEN (after بحبك) ===== */
+  #loveScreen { justify-content: flex-start; padding-top: 0; }
   .love-inner {
-    max-width: 500px;
-    width: 100%;
-    padding: 40px 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 28px;
+    max-width: 500px; width: 100%;
+    padding: 36px 22px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 24px;
   }
-
   .heart-anim {
-    font-size: 80px;
+    font-size: 76px;
     animation: heartbeat 1.4s ease-in-out infinite;
     filter: drop-shadow(0 0 30px rgba(192,57,107,0.7));
   }
@@ -278,170 +178,191 @@
     0%,100% { transform: scale(1) rotate(-5deg); }
     50% { transform: scale(1.2) rotate(5deg); }
   }
-
   .love-title {
     font-family: 'Dancing Script', cursive;
-    font-size: clamp(30px, 7vw, 48px);
-    color: var(--rose-pale);
-    text-align: center;
+    font-size: clamp(28px,7vw,46px);
+    color: var(--rose-pale); text-align: center;
     text-shadow: 0 0 30px rgba(192,57,107,0.5);
   }
-
   .love-card {
-    background: rgba(45,0,40,0.6);
+    background: rgba(45,0,40,0.65);
     border: 1px solid rgba(192,57,107,0.2);
-    border-radius: 24px;
-    padding: 30px 28px;
+    border-radius: 22px; padding: 28px 26px;
     backdrop-filter: blur(20px);
-    box-shadow: 0 0 60px rgba(192,57,107,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+    box-shadow: 0 0 60px rgba(192,57,107,0.07), inset 0 1px 0 rgba(255,255,255,0.04);
   }
-
   .love-card p {
     color: rgba(245,198,216,0.85);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 2;
-    text-align: right;
+    font-size: 15.5px; font-weight: 300;
+    line-height: 2.1; text-align: right;
   }
-  .love-card p strong {
-    color: var(--rose-light);
-    font-weight: 700;
-  }
+  .love-card p strong { color: var(--rose-light); font-weight: 700; }
   .love-card p .gold { color: var(--gold); }
-
-  .love-divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: rgba(192,57,107,0.5);
-    font-size: 20px;
-    letter-spacing: 6px;
-  }
-
-  .love-signature {
-    font-family: 'Dancing Script', cursive;
-    font-size: 24px;
-    color: var(--gold);
-    text-align: center;
-  }
-
-  .orbit-hearts {
-    display: flex;
-    gap: 12px;
-    font-size: 24px;
-    animation: orbit 4s linear infinite;
-  }
-  @keyframes orbit {
-    from { transform: rotate(0deg) translateX(30px) rotate(0deg); }
-    to { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
-  }
-
+  .love-divider { display: flex; align-items: center; gap: 10px; color: rgba(192,57,107,0.5); font-size: 20px; letter-spacing: 6px; }
+  .love-signature { font-family: 'Dancing Script', cursive; font-size: 24px; color: var(--gold); text-align: center; }
   .btn-back {
-    padding: 12px 28px;
-    border-radius: 99px;
-    border: 1px solid rgba(192,57,107,0.3);
-    background: transparent;
-    color: rgba(245,198,216,0.5);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.25s;
+    padding: 12px 28px; border-radius: 99px;
+    border: 1px solid rgba(192,57,107,0.28);
+    background: transparent; color: rgba(245,198,216,0.45);
+    font-family: 'Tajawal', sans-serif; font-size: 14px;
+    cursor: pointer; transition: all 0.25s;
   }
   .btn-back:hover { background: rgba(192,57,107,0.1); color: var(--rose-pale); }
 
-  /* ===== ANGER SCREEN ===== */
-  #angerScreen { gap: 24px; }
-
-  .anger-emoji {
-    font-size: 90px;
-    animation: angershake 0.4s ease-in-out infinite;
+  /* ===== BREAKUP SCREEN (خلاص اللي بينا انتها) ===== */
+  #breakupScreen { gap: 26px; }
+  .breakup-emoji { font-size: 80px; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.08);} }
+  .breakup-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(26px,7vw,44px);
+    color: #b0b0d0; text-align: center;
+    text-shadow: 0 0 25px rgba(150,130,200,0.4);
   }
+  .breakup-card {
+    background: rgba(20,10,40,0.75);
+    border: 1px solid rgba(150,120,200,0.2);
+    border-radius: 22px; padding: 26px;
+    backdrop-filter: blur(20px);
+    max-width: 420px; width: 100%;
+  }
+  .breakup-card p {
+    color: rgba(210,200,240,0.8);
+    font-size: 15.5px; font-weight: 300;
+    line-height: 2.1; text-align: right;
+  }
+  .breakup-card p strong { color: #c4aaf0; font-weight: 700; }
+  .breakup-buttons { display: flex; flex-direction: column; gap: 13px; width: 100%; max-width: 320px; }
+  .btn-forgive {
+    padding: 16px 36px; border-radius: 16px; border: none;
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    font-size: 17px; font-weight: 700;
+    background: linear-gradient(135deg, #5a2da0, #9b6de8);
+    color: #fff;
+    box-shadow: 0 6px 28px rgba(155,109,232,0.4), inset 0 1px 0 rgba(255,255,255,0.18);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-forgive:hover { transform: translateY(-3px); box-shadow: 0 10px 38px rgba(155,109,232,0.6); }
+  .btn-stillangry {
+    padding: 14px 36px; border-radius: 16px;
+    border: 1px solid rgba(150,120,200,0.28);
+    cursor: pointer; font-family: 'Tajawal', sans-serif;
+    font-size: 15px; font-weight: 400;
+    background: transparent; color: rgba(210,200,240,0.5);
+    transition: all 0.25s;
+  }
+  .btn-stillangry:hover { background: rgba(150,120,200,0.1); color: #c4aaf0; }
+
+  /* ===== SORRY SCREEN (خلاص سمحتك) ===== */
+  #sorryScreen { justify-content: flex-start; padding-top: 0; }
+  .sorry-inner {
+    max-width: 500px; width: 100%;
+    padding: 36px 22px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 24px;
+  }
+  .sorry-emoji { font-size: 76px; animation: startwinkle 2s ease-in-out infinite alternate; }
+  @keyframes startwinkle { from{filter:drop-shadow(0 0 10px #ffe066);}to{filter:drop-shadow(0 0 35px #ffc107);} }
+  .sorry-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(28px,7vw,46px);
+    color: #ffe9a0; text-align: center;
+    text-shadow: 0 0 30px rgba(255,200,50,0.4);
+  }
+  .sorry-card {
+    background: rgba(40,30,0,0.65);
+    border: 1px solid rgba(212,168,67,0.22);
+    border-radius: 22px; padding: 28px 26px;
+    backdrop-filter: blur(20px);
+  }
+  .sorry-card p {
+    color: rgba(255,240,180,0.85);
+    font-size: 15.5px; font-weight: 300;
+    line-height: 2.2; text-align: right;
+  }
+  .sorry-card p strong { color: var(--gold); font-weight: 700; }
+  /* poetry card */
+  .poetry-card {
+    background: rgba(20,10,40,0.6);
+    border: 1px solid rgba(155,109,232,0.25);
+    border-radius: 22px; padding: 28px 26px;
+    backdrop-filter: blur(20px);
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(17px,4vw,22px);
+    color: #c4aaf0;
+    line-height: 2.2; text-align: center;
+    text-shadow: 0 0 20px rgba(155,109,232,0.3);
+  }
+  .sorry-divider { display: flex; align-items: center; gap: 10px; color: rgba(212,168,67,0.4); font-size: 18px; letter-spacing: 6px; }
+
+  /* ===== STILL ANGRY SCREEN ===== */
+  #stillAngryScreen { gap: 22px; }
+  .anger-emoji { font-size: 88px; animation: angershake 0.38s ease-in-out infinite; }
   @keyframes angershake {
-    0%,100% { transform: translateX(0) rotate(0deg); }
-    20% { transform: translateX(-10px) rotate(-8deg); }
-    80% { transform: translateX(10px) rotate(8deg); }
+    0%,100%{transform:translateX(0) rotate(0deg);}
+    25%{transform:translateX(-9px) rotate(-7deg);}
+    75%{transform:translateX(9px) rotate(7deg);}
   }
-
   .anger-title {
     font-family: 'Dancing Script', cursive;
-    font-size: clamp(28px, 7vw, 46px);
-    color: #ff4455;
-    text-shadow: 0 0 30px rgba(255,50,70,0.6);
-    text-align: center;
+    font-size: clamp(26px,7vw,44px);
+    color: #ff4455; text-align: center;
+    text-shadow: 0 0 30px rgba(255,50,70,0.55);
   }
-
   .anger-card {
-    background: rgba(60,0,10,0.7);
-    border: 1px solid rgba(255,50,70,0.25);
-    border-radius: 24px;
-    padding: 28px;
+    background: rgba(60,0,10,0.72);
+    border: 1px solid rgba(255,50,70,0.22);
+    border-radius: 22px; padding: 26px;
     backdrop-filter: blur(20px);
-    max-width: 420px;
-    width: 100%;
-    box-shadow: 0 0 60px rgba(255,50,70,0.08);
+    max-width: 420px; width: 100%;
+    box-shadow: 0 0 50px rgba(255,50,70,0.07);
   }
   .anger-card p {
     color: rgba(255,200,210,0.85);
-    font-size: 16px;
-    font-weight: 300;
-    line-height: 2;
-    text-align: right;
+    font-size: 15.5px; font-weight: 300;
+    line-height: 2.1; text-align: right;
   }
   .anger-card p strong { color: #ff6677; font-weight: 700; }
-
   .btn-anger-back {
-    padding: 14px 36px;
-    border-radius: 99px;
-    border: 1px solid rgba(255,50,70,0.3);
-    background: rgba(255,50,70,0.08);
-    color: rgba(255,200,210,0.7);
-    font-family: 'Tajawal', sans-serif;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.25s;
+    padding: 14px 34px; border-radius: 99px;
+    border: 1px solid rgba(255,50,70,0.28);
+    background: rgba(255,50,70,0.07);
+    color: rgba(255,200,210,0.6);
+    font-family: 'Tajawal', sans-serif; font-size: 15px;
+    cursor: pointer; transition: all 0.25s;
   }
-  .btn-anger-back:hover { background: rgba(255,50,70,0.18); color: #ffcccc; }
+  .btn-anger-back:hover { background: rgba(255,50,70,0.17); color: #ffcccc; }
 
   /* ===== CONFETTI ===== */
   .confetti {
-    position: fixed;
-    pointer-events: none;
-    z-index: 100;
-    border-radius: 2px;
+    position: fixed; pointer-events: none;
+    z-index: 100; border-radius: 2px;
     animation: confettiFall linear forwards;
   }
   @keyframes confettiFall {
-    0% { transform: translateY(-40px) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-  }
-
-  /* ===== DECORATIVE LINES ===== */
-  .deco-line {
-    width: 60px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    0%{transform:translateY(-40px) rotate(0deg);opacity:1;}
+    100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
   }
 </style>
 </head>
 <body>
 
-<!-- Particle canvas -->
 <canvas id="canvas"></canvas>
 
 <!-- ============ PUZZLE SCREEN ============ -->
 <div class="screen active" id="puzzleScreen">
   <div class="puzzle-header">
     <h1>✨ رتّب الحروف ✨</h1>
-    <p>اكتشف الاسم عشان تشوف المفاجأة 🌹</p>
+    <p>رتّب حروف الاسم عشان تشوف المفاجأة 🌹</p>
   </div>
   <div class="puzzle-card">
     <div class="puzzle-grid" id="puzzleGrid"></div>
     <div class="puzzle-progress">
-      <span class="progress-text" id="progressText">0 / 7</span>
+      <span class="progress-text" id="progressText">0 / 6</span>
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
       </div>
-      <span style="color:rgba(245,198,216,0.4);font-size:13px;">💕</span>
+      <span style="color:rgba(245,198,216,0.38);font-size:13px;">💕</span>
     </div>
   </div>
 </div>
@@ -457,7 +378,7 @@
   <p class="choice-question">إيه اللي بينا؟ 💭</p>
   <div class="choice-buttons">
     <button class="btn-primary" onclick="showLove()"><span>💖 بحبك</span></button>
-    <button class="btn-secondary" onclick="showAnger()">🤝 احنا أخوات</button>
+    <button class="btn-secondary" onclick="showBreakup()">💔 خلاص اللي بينا انتها</button>
   </div>
 </div>
 
@@ -469,16 +390,15 @@
     <div class="love-card">
       <p>
         <strong>حبيبتي الغالية...</strong><br><br>
-        من يوم ما اتعرفت عليكِ والدنيا اتغيرت في عنيّا.
-        مش عارف أوصفلك الإحساس ده بالكلام، بس هجرب عشانك 💕<br><br>
-        <strong>بحبك جداً جداً جداً...</strong><br>
-        لدرجة إنك بتيجي في بالي كل لحظة وكل ثانية وكل يوم.
-        بحبك لما بصحى الصبح وبحبك لما بنام الليل ❤️<br><br>
+        لازم أقولك حاجة مهمة جداً وعايزك تسمعيها من قلبي 💕<br><br>
+        زمان قلت إن القمر مش وقال يقعد مكانك — <span class="gold">وده كان غلط مني</span>.<br>
+        الحقيقة إنتِ مش القمر...<br>
+        <strong>إنتِ المجرّة كلها 🌌✨</strong><br><br>
+        إنتِ الشمس والنجوم والسما كلها.
+        القمر مجرد نقطة صغيرة في كونك الواسع يا حبيبه 💝<br><br>
         <span class="gold">وحشتيني يا حبيبه...</span><br>
-        وحشتيني بشكل مش طبيعي. عايزك تعرفي إن
-        <strong>محمد</strong> بيحبك من كل قلبه ومن كل روحه 💝<br><br>
-        أنتِ أجمل حاجة حصلتلي في حياتي،
-        وبتمنى أكون دايماً جنبك وأخلّيكِ أسعد واحدة في الدنيا 🌹
+        بيحبك <strong>محمد</strong> من كل قلبه ومن كل روحه.<br>
+        وعايزك تعرفي إنك أغلى حاجة في حياتي ❤️
       </p>
     </div>
     <div class="love-divider">♥ ♥ ♥</div>
@@ -487,67 +407,104 @@
   </div>
 </div>
 
-<!-- ============ ANGER SCREEN ============ -->
-<div class="screen" id="angerScreen">
+<!-- ============ BREAKUP SCREEN ============ -->
+<div class="screen" id="breakupScreen">
+  <div class="breakup-emoji">💜</div>
+  <h2 class="breakup-title">خلاص اللي بينا انتها؟ 🥺</h2>
+  <div class="breakup-card">
+    <p>
+      <strong>يا حبيبه...</strong><br><br>
+      أنا عارف إني غلطت وآسف جداً. عايزك تعرفي إن
+      <strong>محمد</strong> بيعتذرلك بكل صدق 💜<br><br>
+      آسف إني قلت كلام عن دينا زمان وأنتِ ما كانتيش مكانها في قلبي.
+      القلب ده ليكِ إنتِ بس 🌙<br><br>
+      <strong>هتسمحيلي؟</strong>
+    </p>
+  </div>
+  <div class="breakup-buttons">
+    <button class="btn-forgive" onclick="showSorry()">✨ خلاص سمحتك</button>
+    <button class="btn-stillangry" onclick="showStillAngry()">😤 لسه زعلانه</button>
+  </div>
+</div>
+
+<!-- ============ SORRY (forgiven) SCREEN ============ -->
+<div class="screen" id="sorryScreen">
+  <div class="sorry-inner">
+    <div class="sorry-emoji">🌟</div>
+    <h2 class="sorry-title">شكراً يا قلبي 🌙</h2>
+    <div class="sorry-card">
+      <p>
+        <strong>يا حبيبه يا غالية...</strong><br><br>
+        مش هنسى إنك سمحتيلي. ده أجمل هديّة ممكن تديهالي 💛<br><br>
+        وهعدك إن <strong>محمد</strong> مش هيغلط تاني.
+        هتكوني دايماً في قلبي وعنيّا 🌟<br><br>
+        <span style="color:var(--gold);">إنتِ مش القمر... إنتِ المجرّة كلها ✨🌌</span>
+      </p>
+    </div>
+    <div class="sorry-divider">✦ ✦ ✦</div>
+    <div class="poetry-card">
+      يا حبيبه يا نور عينيّ<br>
+      لو غبتِ تغيب الدنيا مينّي<br>
+      إنتِ مش قمر يا ستّ الكل<br>
+      إنتِ المجرّة... وقلبي دليلي 🌌💜
+    </div>
+    <button class="btn-back" onclick="showChoice()">↩ رجوع</button>
+  </div>
+</div>
+
+<!-- ============ STILL ANGRY SCREEN ============ -->
+<div class="screen" id="stillAngryScreen">
   <div class="anger-emoji">😤</div>
-  <h2 class="anger-title">أخوات؟!! 🔥</h2>
+  <h2 class="anger-title">لسه زعلانه؟! 🔥</h2>
   <div class="anger-card">
     <p>
       <strong>يا حبيبه!!!</strong><br><br>
-      إيه ده اللي بتقوليه ده؟! 😡<br>
-      <strong>أخوات؟!</strong> بعد كل اللي إنتِ عارفاه؟!<br><br>
-      روحي فكري كويس كويس يا بنت! 😤<br>
-      دي مش إجابة صح وإنتِ عارفاها كويس أوي! 💔<br><br>
-      <strong>محمد مش هيقبل الكلام ده خالص!</strong> 😠
+      أنا اعتذرت وعملت اللي عليّا...<br>
+      <strong>بس صالحي نفسك بقا! 😠</strong><br><br>
+      الزعل ده مش هيجيب حاجة يا بنت! 🙄<br>
+      ومهما قولتي محمد بيحبك وخلاص! 💔<br><br>
+      <strong>روحي فكري كويس وارجعي تسمحيلي! 😤</strong>
     </p>
   </div>
-  <button class="btn-anger-back" onclick="showChoice()">↩ ارجعي وإختاري صح</button>
+  <button class="btn-anger-back" onclick="showBreakup()">↩ ارجعي وإختاري</button>
 </div>
 
 <script>
-/* ========== CANVAS PARTICLES ========== */
+/* ===== CANVAS PARTICLES ===== */
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-const particles = [];
-const SYMBOLS = ['❤','♥','✦','✧','·'];
-for (let i = 0; i < 55; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    size: Math.random() * 16 + 8,
-    speedY: -(Math.random() * 0.5 + 0.2),
-    speedX: (Math.random() - 0.5) * 0.3,
-    opacity: Math.random() * 0.5 + 0.1,
-    sym: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-    hue: Math.random() * 40 + 320
-  });
-}
+const SYMBOLS = ['❤','♥','✦','✧','·','🌙'];
+const particles = Array.from({length:52}, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  size: Math.random() * 15 + 8,
+  speedY: -(Math.random() * 0.45 + 0.18),
+  speedX: (Math.random() - 0.5) * 0.28,
+  opacity: Math.random() * 0.45 + 0.08,
+  sym: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+  hue: Math.random() * 40 + 320
+}));
 
-function animParticles() {
+(function animParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach(p => {
     ctx.globalAlpha = p.opacity;
     ctx.fillStyle = `hsl(${p.hue},70%,70%)`;
     ctx.font = `${p.size}px serif`;
     ctx.fillText(p.sym, p.x, p.y);
-    p.y += p.speedY;
-    p.x += p.speedX;
+    p.y += p.speedY; p.x += p.speedX;
     if (p.y < -20) { p.y = canvas.height + 20; p.x = Math.random() * canvas.width; }
   });
   ctx.globalAlpha = 1;
   requestAnimationFrame(animParticles);
-}
-animParticles();
+})();
 
-/* ========== PUZZLE ========== */
-const TARGET = ['ح','ب','ي','ب','ه','💕','🌹'];
+/* ===== PUZZLE — TARGET: م ح م د ❤ 🌹 (6 tiles, 3x2 grid with 1 empty = 7 cells, use 3 cols) ===== */
+const TARGET = ['م','ح','م','د','❤','🌹'];
 let grid = [...TARGET].sort(() => Math.random() - 0.5);
 while (grid.join('') === TARGET.join('')) grid = [...TARGET].sort(() => Math.random() - 0.5);
 
@@ -556,20 +513,18 @@ let selected = null;
 function renderGrid() {
   const g = document.getElementById('puzzleGrid');
   g.innerHTML = '';
-  // 4 columns: 7 tiles + 1 empty slot
+  // 6 tiles + 1 empty = 7 cells in 3-col grid
   const display = [...grid, ''];
   display.forEach((ch, i) => {
     const div = document.createElement('div');
-    div.className = 'tile';
-    if (i === 7) {
+    if (i === 6) {
       div.className = 'tile empty';
     } else {
+      div.className = 'tile';
       div.textContent = ch;
       if (grid[i] === TARGET[i]) div.classList.add('correct');
       if (selected === i) div.classList.add('selected');
-      if (!div.classList.contains('correct')) {
-        div.addEventListener('click', () => handleClick(i));
-      }
+      if (grid[i] !== TARGET[i]) div.addEventListener('click', () => handleClick(i));
     }
     g.appendChild(div);
   });
@@ -581,9 +536,7 @@ function handleClick(i) {
   if (selected === null) {
     selected = i;
   } else {
-    if (selected !== i) {
-      [grid[selected], grid[i]] = [grid[i], grid[selected]];
-    }
+    if (selected !== i) [grid[selected], grid[i]] = [grid[i], grid[selected]];
     selected = null;
     checkWin();
   }
@@ -591,58 +544,43 @@ function handleClick(i) {
 }
 
 function updateProgress() {
-  let correct = 0;
-  for (let i = 0; i < 7; i++) if (grid[i] === TARGET[i]) correct++;
-  document.getElementById('progressText').textContent = correct + ' / 7';
-  document.getElementById('progressFill').style.width = (correct / 7 * 100) + '%';
+  let c = 0;
+  for (let i = 0; i < 6; i++) if (grid[i] === TARGET[i]) c++;
+  document.getElementById('progressText').textContent = c + ' / 6';
+  document.getElementById('progressFill').style.width = (c / 6 * 100) + '%';
 }
 
 function checkWin() {
-  let correct = 0;
-  for (let i = 0; i < 7; i++) if (grid[i] === TARGET[i]) correct++;
-  if (correct === 7) {
-    spawnConfetti();
-    setTimeout(() => switchScreen('puzzleScreen', 'choiceScreen'), 900);
-  }
+  let c = 0;
+  for (let i = 0; i < 6; i++) if (grid[i] === TARGET[i]) c++;
+  if (c === 6) { spawnConfetti(); setTimeout(() => switchScreen('puzzleScreen','choiceScreen'), 900); }
 }
 
 renderGrid();
 
-/* ========== SCREEN TRANSITIONS ========== */
+/* ===== SCREEN TRANSITIONS ===== */
 function switchScreen(from, to) {
   document.getElementById(from).classList.remove('active');
   document.getElementById(to).classList.add('active');
 }
+function showLove()       { switchScreen('choiceScreen','loveScreen'); spawnConfetti(); }
+function showBreakup()    { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('breakupScreen').classList.add('active'); }
+function showSorry()      { switchScreen('breakupScreen','sorryScreen'); spawnConfetti('#c4aaf0','#ffe066'); }
+function showStillAngry() { switchScreen('breakupScreen','stillAngryScreen'); }
+function showChoice()     { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('choiceScreen').classList.add('active'); }
 
-function showLove() {
-  switchScreen('choiceScreen', 'loveScreen');
-  spawnConfetti();
-}
-function showAnger() {
-  switchScreen('choiceScreen', 'angerScreen');
-}
-function showChoice() {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('choiceScreen').classList.add('active');
-}
-
-/* ========== CONFETTI ========== */
-function spawnConfetti() {
-  const colors = ['#c0396b','#e8749a','#f5c6d8','#d4a843','#fff','#ff6b9d','#ffb3d1'];
+/* ===== CONFETTI ===== */
+function spawnConfetti(c1, c2) {
+  const palettes = {
+    love: ['#c0396b','#e8749a','#f5c6d8','#d4a843','#fff','#ff6b9d'],
+    sorry: ['#c4aaf0','#ffe066','#9b6de8','#fff','#ffd700','#b8a0ff']
+  };
+  const colors = c1 ? [c1, c2||c1,'#fff','#ffe9a0'] : palettes.love;
   for (let i = 0; i < 70; i++) {
     const el = document.createElement('div');
     el.className = 'confetti';
     const size = 6 + Math.random() * 10;
-    el.style.cssText = `
-      left:${Math.random()*100}vw;
-      top:-20px;
-      width:${size}px;
-      height:${size * (Math.random() > 0.5 ? 1 : 2.5)}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
-      animation-duration:${2.5 + Math.random()*2.5}s;
-      animation-delay:${Math.random()*1.2}s;
-    `;
+    el.style.cssText = `left:${Math.random()*100}vw;top:-20px;width:${size}px;height:${size*(Math.random()>.5?1:2.5)}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2.5+Math.random()*2.5}s;animation-delay:${Math.random()*1.2}s;`;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 5500);
   }
